@@ -1,15 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from ingredients.models import Ingredient
 
 User = get_user_model()
-
-INGRIDIENT_MASS_CHOICES = (
-        ('tbs', 'ст.л'),
-        ('tes', 'ч.л'),
-        ('g', 'г'),
-        ('ml', 'мл'),
-        ('val', 'шт'),
-    )
 
 
 class Tag(models.Model):
@@ -34,22 +27,23 @@ class Recipe(models.Model):
         default=None
     )
     tags = models.ManyToManyField(Tag,
-                                  through='TagRecipes')
+                                  through='TagRecipe')
     time = models.IntegerField(verbose_name='Cook time')
+    ingredients = models.ManyToManyField(Tag,
+                                         through='RecipeIngredient')
 
     def __str__(self):
         return self.name
 
 
-class Ingridient(models.Model):
-    name = models.CharField()
-    value = models.IntegerField()
-    value_type = models.Choices(INGRIDIENT_MASS_CHOICES)
-
-
-class TagRecipes(models.Model):
+class TagRecipe(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Recipe {self.recipe} with Tag {self.tag}'
+
+
+class RecipeIngredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingedient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
