@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=16)
     slug = models.SlugField()
     color = models.CharField(max_length=16)
 
@@ -27,10 +27,10 @@ class Recipe(models.Model):
         default=None
     )
     tags = models.ManyToManyField(Tag,
-                                  through='TagRecipe')
+                                  through='TagRecipe', related_name='tag_recipe')
+    ingredients = models.ManyToManyField(Ingredient,
+                                         through='RecipeIngredient', related_name='ingredient_recipe')
     time = models.IntegerField(verbose_name='Cook time')
-    ingredients = models.ManyToManyField(Tag,
-                                         through='RecipeIngredient')
 
     def __str__(self):
         return self.name
