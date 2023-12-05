@@ -1,6 +1,4 @@
 from pathlib import Path
-from datetime import timedelta
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -122,17 +120,19 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'authors.paginators.CustomAuthorPagination',
     'PAGE_SIZE': 10
 }
 
 DJOSER = {
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.AllowAny'],
     },
     'SERIALIZERS': {
         'user': 'authors.serializers.CustomUserSerializer',
         'user_create': 'authors.serializers.CustomCreateUserSerializer',
+        'current_user': 'authors.serializers.CustomCreateUserSerializer',
     },
     'HIDE_USERS': False,
     'LOGIN_FIELD': 'email'
