@@ -4,14 +4,13 @@ from django.urls import (
     include
 )
 from rest_framework.routers import DefaultRouter
-from authors.views import SubscriptionListViewSet
+from authors.views import SubscriptionListViewSet, SubscriptionViewSet
 
 router = DefaultRouter()
 
-
-#router.register(r'^(?P<author_id>\d+)/subscribe/', SubscriptionListViewSet, basename='subscription')
-router.register(r'subscriptions\/$', SubscriptionListViewSet, basename='subscriptions')
+router.register('(?P<user_id>\d+)/subscribe/', SubscriptionViewSet, basename='subscription')
+#router.register(r'', SubscriptionListViewSet, basename='subscriptions')
 
 urlpatterns = [
-    re_path(r'subscriptions\/$', include(router.urls))
+    re_path('api/users/', include(router.urls))
 ]

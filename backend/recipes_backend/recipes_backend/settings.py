@@ -141,24 +141,24 @@ DJOSER = {
 
 AUTH_USER_MODEL = 'authors.Author'
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'db': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler'
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['db'],
-            'level': 'DEBUG',
-            'propagate': True
-        },
-        'django.server': {
-            'handlers': ['db'],
-            'level': 'DEBUG',
-            'propagate': True
-        }
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'handlers': {
+#         'db': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler'
+#         }
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['db'],
+#             'level': 'DEBUG',
+#             'propagate': True
+#         },
+#         'django.server': {
+#             'handlers': ['db'],
+#             'level': 'DEBUG',
+#             'propagate': True
+#         }
+#     }
+# }

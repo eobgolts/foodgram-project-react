@@ -8,7 +8,7 @@ from django.urls import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'subscriptions\/$', include('authors.urls')),
+    re_path(r'^api/users/.*bscri.*', include('authors.urls')),
     path('api/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.authtoken')),
 ]

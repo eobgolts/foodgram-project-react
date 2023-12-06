@@ -31,11 +31,8 @@ class CustomUserSerializer(UserSerializer):
 
 
 class SubscriberSerializer(serializers.ModelSerializer):
-    subscriber = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        default=serializers.CurrentUserDefault())
-    author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    subscriber = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = AuthorSubscriber

@@ -3,17 +3,18 @@ from django.db.models import (
     Model
 )
 from django.shortcuts import get_object_or_404
+from authors.models import AuthorSubscriber
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
-def query_with_filter(model: Model,
-                      filter_dict: dict,
-                      single=False) -> QuerySet:
-    if single:
-        return get_object_or_404(
-            model,
-            **filter_dict
-        )
-    else:
-        return model.objects.filter(
-            **filter_dict
-        )
+def query_subscribers(user: User):
+    authors = AuthorSubscriber.objects.only('author').filter(subscriber=user)
+
+    return authors
+
+
+def user_by_id(user: str):
+    print(user)
+    return get_object_or_404(User, username=user)

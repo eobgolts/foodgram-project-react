@@ -7,10 +7,9 @@ from rest_framework.mixins import (
     RetrieveModelMixin
 )
 from rest_framework.viewsets import GenericViewSet
-from authors.models import AuthorSubscriber
-from authors.db_query import query_with_filter
+from authors.db_query import query_subscribers, user_by_id
 from django.contrib.auth import get_user_model
-from authors.serializers import CustomUserSerializer
+from authors.serializers import CustomUserSerializer, SubscriberSerializer
 
 if TYPE_CHECKING:
     from django.db.models import (
@@ -21,18 +20,29 @@ if TYPE_CHECKING:
 User = get_user_model()
 
 
-class SubscriptionListViewSet(ListModelMixin, GenericViewSet):
-    #serializer_class = CustomUserSerializer
+class SubscriptionListViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
+    serializer_class = CustomUserSerializer
 
     def get_queryset(self) -> QuerySet:
-        print('Hellosafsasaggagag')
-        # authors = query_with_filter(
-        #     AuthorSubscriber, {'subscriber': self.request.user},
-        # ).only('author')
-        #
-        # return authors
+        return query_subscribers(self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(
             subscriber=self.request.user,
         )
+
+
+class SubscriptionViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+
+    def perform_create(self, serializer):
+        serializer.save(
+            subscriber=self.request.user,
+            author=user_by_id(self.kwargs.get('user_id'))
+        )
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            print('111111111111111')
+            return SubscriberSerializer
+
+        return CustomUserSerializer
