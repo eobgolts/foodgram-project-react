@@ -3,8 +3,11 @@ from djoser.serializers import (
     UserCreateSerializer,
 )
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-
+from rest_framework.validators import (
+    UniqueValidator,
+    UniqueTogetherValidator
+)
+from authors.models import AuthorSubscriber
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -25,3 +28,22 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
+
+
+class SubscriberSerializer(serializers.ModelSerializer):
+    subscriber = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        default=serializers.CurrentUserDefault())
+    author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = AuthorSubscriber
+        fields = ('subscriber', 'author')
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=AuthorSubscriber.objects.all(),
+                fields=('subscriber', 'author')
+            )
+        ]

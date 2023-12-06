@@ -47,3 +47,6 @@ class TagRecipe(models.Model):
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingedient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Recipe {self.recipe} with ingedient {self.ingedient}'

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'authors.apps.AuthorsConfig',
     'ingredients.apps.IngredientsConfig',
     'recipes.apps.RecipesConfig',
 ]
@@ -136,4 +137,28 @@ DJOSER = {
     },
     'HIDE_USERS': False,
     'LOGIN_FIELD': 'email'
+}
+
+AUTH_USER_MODEL = 'authors.Author'
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'db': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler'
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['db'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django.server': {
+            'handlers': ['db'],
+            'level': 'DEBUG',
+            'propagate': True
+        }
+    }
 }
