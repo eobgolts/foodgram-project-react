@@ -15,6 +15,5 @@ def query_subscribers(user: User):
     return authors
 
 
-def user_by_id(user: str):
-    print(user)
-    return get_object_or_404(User, username=user)
+def user_by_id(user: int):
+    return get_object_or_404(User, pk=user)

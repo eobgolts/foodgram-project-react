@@ -25,22 +25,42 @@ class CustomCreateUserSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+
+    def get_is_subscribed(self, obj) -> bool:
+        user = self.context['request'].user
+
+        if user.is_anonymous:
+            return False
+
+        return bool(obj.following.filter(subscriber=user))
 
 
 class SubscriberSerializer(serializers.ModelSerializer):
-    subscriber = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    subscriber = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    subscribed = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = AuthorSubscriber
-        fields = ('subscriber', 'author')
+        fields = ('subscriber', 'subscribed')
 
         validators = [
             UniqueTogetherValidator(
                 queryset=AuthorSubscriber.objects.all(),
-                fields=('subscriber', 'author')
+                fields=('subscriber', 'subscribed')
             )
         ]
+
+    def validate(self, data):
+        user = self.context['request'].user
+
+        if user == data['subscribed']:
+            raise serializers.ValidationError('Невозможно выполнить '
+                                              'подписку пользователя, '
+                                              f'{user} на себя самого')
+
+        return data

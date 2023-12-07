@@ -1,48 +1,39 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-
-from rest_framework.mixins import (
-    ListModelMixin,
-    CreateModelMixin,
-    RetrieveModelMixin
-)
-from rest_framework.viewsets import GenericViewSet
-from authors.db_query import query_subscribers, user_by_id
 from django.contrib.auth import get_user_model
-from authors.serializers import CustomUserSerializer, SubscriberSerializer
-
-if TYPE_CHECKING:
-    from django.db.models import (
-        QuerySet
-    )
+from authors.serializers import SubscriberSerializer
+from djoser.views import UserViewSet
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 User = get_user_model()
 
 
-class SubscriptionListViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
-    serializer_class = CustomUserSerializer
+class CustomUserViewset(UserViewSet):
 
-    def get_queryset(self) -> QuerySet:
-        return query_subscribers(self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(
-            subscriber=self.request.user,
+    @action(["post"], detail=True)
+    def subscribe(self, request, *args, **kwargs) -> Response:
+        author = self.get_object()
+        subscribe_serializer = SubscriberSerializer(
+            data={'subscriber': request.user.id, 'subscribed': author.id}, context={'request': request}
         )
+        subscribe_serializer.is_valid(raise_exception=True)
+        subscribe_serializer.save()
 
+        serializer = self.serializer_class(instance=author, context={'request': request})
 
-class SubscriptionViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        serializer.save(
-            subscriber=self.request.user,
-            author=user_by_id(self.kwargs.get('user_id'))
-        )
+    @action(["get"], detail=False)
+    def subscriptions(self, request, *args, **kwargs) -> Response:
+        author = request.user
+        queryset = User.objects.filter(following__subscriber=author)
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            print('111111111111111')
-            return SubscriberSerializer
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        return CustomUserSerializer
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
