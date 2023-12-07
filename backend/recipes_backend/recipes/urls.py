@@ -1,9 +1,10 @@
 from rest_framework.routers import DefaultRouter
 
-from authors.views import CustomUserViewset
+from recipes.views import TagViewSet
 
 router = DefaultRouter()
 
-router.register('', CustomUserViewset)
+router.register('tags/', TagViewSet)
+
 
 urlpatterns = router.urls

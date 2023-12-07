@@ -27,9 +27,9 @@ class Recipe(models.Model):
         default=None
     )
     tags = models.ManyToManyField(Tag,
-                                  through='TagRecipe', related_name='tag_recipe')
+                                  through='TagRecipe')
     ingredients = models.ManyToManyField(Ingredient,
-                                         through='RecipeIngredient', related_name='ingredient_recipe')
+                                         through='RecipeIngredient')
     time = models.IntegerField(verbose_name='Cook time')
 
     def __str__(self):
@@ -37,8 +37,8 @@ class Recipe(models.Model):
 
 
 class TagRecipe(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_tag')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tag_recipe')
 
     def __str__(self):
         return f'Recipe {self.recipe} with Tag {self.tag}'
