@@ -1,9 +1,9 @@
 from rest_framework.routers import DefaultRouter
 
-from authors.views import CustomUserViewset
+from ingredients.views import IngridientViewSet
 
 router = DefaultRouter()
 
-router.register('users/', CustomUserViewset)
+router.register('', IngridientViewSet)
 
 urlpatterns = router.urls

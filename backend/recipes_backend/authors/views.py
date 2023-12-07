@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from django.contrib.auth import get_user_model
-from authors.serializers import SubscriberSerializer
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from authors.serializers import SubscriberSerializer
 
 User = get_user_model()
 
@@ -21,7 +22,7 @@ class CustomUserViewset(UserViewSet):
         subscribe_serializer.is_valid(raise_exception=True)
         subscribe_serializer.save()
 
-        serializer = self.serializer_class(instance=author, context={'request': request})
+        serializer = self.get_serializer(author)
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
@@ -36,4 +37,5 @@ class CustomUserViewset(UserViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
+
         return Response(serializer.data)
