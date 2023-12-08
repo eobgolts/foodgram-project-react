@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ingredients.models import Ingredient, IngridientValue
+from ingredients.models import Ingredient, IngredientValue
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -11,8 +11,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientValueSerializer(serializers.ModelSerializer):
-    ingredient = serializers.PrimaryKeyRelatedField(source='id')
+    ingredient = serializers.PrimaryKeyRelatedField(source='id', queryset=Ingredient.objects.all())
 
     class Meta:
-        fields = ('ingridient', 'amount')
-        model = IngridientValue
+        fields = ('ingredient', 'amount')
+        model = IngredientValue

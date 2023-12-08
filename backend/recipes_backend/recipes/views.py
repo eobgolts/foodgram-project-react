@@ -3,8 +3,8 @@ from rest_framework import (
     permissions,
 )
 
-from recipes.models import Tag
-from recipes.serializers import TagSerializer
+from recipes.models import Tag, Recipe
+from recipes.serializers import TagSerializer, RecipesSerializer
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -13,3 +13,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (permissions.AllowAny,)
     pagination_class = None
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipesSerializer

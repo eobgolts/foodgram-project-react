@@ -10,7 +10,6 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'slug', 'color')
-        read_only_fields = ('name', 'slug', 'color')
 
         validators = [
             UniqueTogetherValidator(
@@ -23,18 +22,12 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipesSerializer(serializers.ModelSerializer):
     ingredients = IngredientValueSerializer(many=True)
-    tags = TagSerializer()
+    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
+    image = serializers.CharField(max_length=100)
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'description', 'author', 'image', 'text', 'cooking_time')
-
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Tag.objects.all(),
-                fields=('name', 'slug', 'color')
-            )
-        ]
+        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags')
 
 
 
