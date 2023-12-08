@@ -16,7 +16,7 @@ class Tag(models.Model):
 
 class Recipe(models.Model):
     name = models.CharField(max_length=16)
-    description = models.TextField()
+    text = models.TextField()
     author = models.ForeignKey(
         User, related_name='recipes',
         on_delete=models.CASCADE
@@ -30,7 +30,7 @@ class Recipe(models.Model):
                                   through='TagRecipe')
     ingredients = models.ManyToManyField(Ingredient,
                                          through='RecipeIngredient')
-    time = models.IntegerField(verbose_name='Cook time')
+    cooking_time = models.IntegerField(verbose_name='Cook time')
 
     def __str__(self):
         return self.name

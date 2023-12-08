@@ -32,7 +32,7 @@ class Ingredient(models.Model):
 
 class IngridientValue(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    value = models.IntegerField()
+    amount = models.IntegerField()
 
 
 # по вкусу

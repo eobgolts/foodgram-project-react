@@ -3,25 +3,31 @@ from recipes.models import Tag, Recipe
 from rest_framework.validators import (
     UniqueTogetherValidator
 )
+from ingredients.serializers import IngredientValueSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'slug', 'color')
+        read_only_fields = ('name', 'slug', 'color')
 
         validators = [
             UniqueTogetherValidator(
                 queryset=Tag.objects.all(),
                 fields=('name', 'slug', 'color')
+
             )
         ]
 
 
 class RecipesSerializer(serializers.ModelSerializer):
+    ingredients = IngredientValueSerializer(many=True)
+    tags = TagSerializer()
+
     class Meta:
-        model = Tag
-        fields = ('id', 'name', 'slug', 'color')
+        model = Recipe
+        fields = ('id', 'name', 'description', 'author', 'image', 'text', 'cooking_time')
 
         validators = [
             UniqueTogetherValidator(
@@ -29,6 +35,8 @@ class RecipesSerializer(serializers.ModelSerializer):
                 fields=('name', 'slug', 'color')
             )
         ]
+
+
 
 
 
