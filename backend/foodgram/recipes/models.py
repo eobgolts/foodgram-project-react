@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from ingredients.models import Ingredient
+from ingredients.models import IngredientValue
 
 User = get_user_model()
 
@@ -15,18 +15,18 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=200)
     text = models.TextField()
     author = models.ForeignKey(
         User, related_name='recipes',
         on_delete=models.CASCADE
     )
-    image = models.CharField(max_length=50)
+    image = models.TextField()
     tags = models.ManyToManyField(Tag,
                                   through='TagRecipe')
-    ingredients = models.ManyToManyField(Ingredient,
+    ingredients = models.ManyToManyField(IngredientValue,
                                          through='RecipeIngredient')
-    cooking_time = models.IntegerField(verbose_name='Cook time')
+    cooking_time = models.PositiveIntegerField(verbose_name='Cook time')
 
     def __str__(self):
         return self.name
@@ -42,7 +42,7 @@ class TagRecipe(models.Model):
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingedient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(IngredientValue, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Recipe {self.recipe} with ingedient {self.ingedient}'
+        return f'Recipe {self.recipe} with ingedient {self.ingedients}'
