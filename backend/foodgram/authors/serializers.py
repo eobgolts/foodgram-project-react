@@ -9,8 +9,10 @@ from rest_framework.validators import (
 )
 from authors.models import AuthorSubscriber
 from django.contrib.auth import get_user_model
+from recipes.serializers import RecipeSubscriberSerializer
 
 User = get_user_model()
+
 
 
 class CustomCreateUserSerializer(UserCreateSerializer):
@@ -30,6 +32,22 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+
+    def get_is_subscribed(self, obj) -> bool:
+        user = self.context['request'].user
+
+        if user.is_anonymous:
+            return False
+
+        return bool(obj.following.filter(subscriber=user))
+
+
+class CustomUserSubscriberSerializer(CustomUserSerializer):
+    recipes = RecipeSubscriberSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes')
 
     def get_is_subscribed(self, obj) -> bool:
         user = self.context['request'].user

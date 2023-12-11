@@ -9,6 +9,7 @@ from ingredients.models import IngredientValue, Ingredient, IngredientMeasuremen
 from recipes.models import RecipeIngredient, Recipe, TagRecipe
 from django.shortcuts import get_object_or_404
 
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -46,9 +47,8 @@ class RecipesSerializer(serializers.ModelSerializer):
             ingredient_value_obj, status = IngredientValue.objects.get_or_create(
                 name=ingredient.name,
                 amount=ingredient_value['amount'],
-                measurement_unit=ingredient.measurement_unit.id
+                measurement_unit=ingredient.measurement_unit
             )
-            print('HELLLOOOOO')
             RecipeIngredient.objects.create(
                 recipe=recipe, ingredient=ingredient_value_obj
             )
@@ -64,28 +64,6 @@ class RecipesSerializer(serializers.ModelSerializer):
             )
 
 
-
-
-
-'''
-class Recipe(models.Model):
-    name = models.CharField(max_length=16)
-    description = models.TextField()
-    author = models.ForeignKey(
-        User, related_name='recipes',
-        on_delete=models.CASCADE
-    )
-    image = models.ImageField(
-        upload_to='cats/images/',
-        null=True,
-        default=None
-    )
-    tags = models.ManyToManyField(Tag,
-                                  through='TagRecipe')
-    ingredients = models.ManyToManyField(Ingredient,
-                                         through='RecipeIngredient')
-    time = models.IntegerField(verbose_name='Cook time')
-
-    def __str__(self):
-        return self.name
-'''
+class RecipeSubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('id', 'name', 'image', 'cooking_time')
