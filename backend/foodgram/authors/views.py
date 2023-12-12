@@ -6,12 +6,18 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from authors.serializers import SubscriberSerializer
+from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
 
 User = get_user_model()
 
 
 class CustomUserViewset(UserViewSet):
+
+    def get_serializer_class(self):
+        if self.action in ('subscribe', 'subscriptions'):
+            return CustomUserSubscriberSerializer
+
+        return super().get_serializer_class()
 
     @action(["post"], detail=True)
     def subscribe(self, request, *args, **kwargs) -> Response:

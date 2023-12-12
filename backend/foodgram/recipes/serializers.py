@@ -1,13 +1,14 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from recipes.models import Tag, Recipe
 from rest_framework.validators import (
     UniqueTogetherValidator
 )
-from ingredients.serializers import IngredientValueSerializer, IngredientSerializer
+
 from authors.serializers import CustomUserSerializer
-from ingredients.models import IngredientValue, Ingredient, IngredientMeasurementUnit
+from ingredients.models import IngredientValue, Ingredient
+from ingredients.serializers import IngredientValueSerializer
 from recipes.models import RecipeIngredient, Recipe, TagRecipe
-from django.shortcuts import get_object_or_404
+from recipes.models import Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -64,6 +65,7 @@ class RecipesSerializer(serializers.ModelSerializer):
             )
 
 
-class RecipeSubscriberSerializer(serializers.ModelSerializer):
+class RecipeSubscriberSerializer(RecipesSerializer):
     class Meta:
+        model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')

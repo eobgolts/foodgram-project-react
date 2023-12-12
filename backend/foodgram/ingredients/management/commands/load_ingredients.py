@@ -1,11 +1,12 @@
 import json
+from pathlib import Path
 
 from django.core.management.base import BaseCommand
+
 from ingredients.models import (
     Ingredient,
     IngredientMeasurementUnit
 )
-from pathlib import Path
 
 
 class Command(BaseCommand):

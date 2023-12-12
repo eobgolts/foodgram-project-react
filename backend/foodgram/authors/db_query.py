@@ -1,10 +1,7 @@
-from django.db.models import (
-    QuerySet,
-    Model
-)
-from django.shortcuts import get_object_or_404
-from authors.models import AuthorSubscriber
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+
+from authors.models import AuthorSubscriber
 
 User = get_user_model()
 
