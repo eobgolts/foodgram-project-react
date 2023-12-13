@@ -4,7 +4,9 @@ from rest_framework.validators import (
     UniqueTogetherValidator
 )
 
-from authors.models import AuthorSubscriber
+from authors.models import (
+    AuthorSubscriber
+)
 from authors.serializers import CustomUserSerializer
 from recipes.serializers import RecipeSubscriberSerializer
 

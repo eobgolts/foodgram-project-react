@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
+from recipes.serializers import RecipeSubscriberSerializer
 
 User = get_user_model()
 
@@ -16,6 +17,9 @@ class CustomUserViewset(UserViewSet):
     def get_serializer_class(self):
         if self.action in ('subscribe', 'subscriptions'):
             return CustomUserSubscriberSerializer
+
+        if self.action == 'favorite':
+            return RecipeSubscriberSerializer
 
         return super().get_serializer_class()
 

@@ -1,14 +1,18 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import (
     UniqueTogetherValidator
 )
 
+from authors.models import UserFavorite
 from authors.serializers import CustomUserSerializer
 from ingredients.models import IngredientValue, Ingredient
 from ingredients.serializers import IngredientValueSerializer
 from recipes.models import RecipeIngredient, Recipe, TagRecipe
 from recipes.models import Tag
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -30,10 +34,12 @@ class RecipesSerializer(serializers.ModelSerializer):
     image = serializers.CharField()
     cooking_time = serializers.IntegerField(min_value=1)
     author = CustomUserSerializer(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags')
+        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags', 'is_favorited')
 
     def create(self, validated_data):
         ingredients_data = self.initial_data.pop('ingredients')
@@ -64,8 +70,32 @@ class RecipesSerializer(serializers.ModelSerializer):
                 recipe=recipe
             )
 
+    def get_is_favorited(self, obj) -> bool:
+        user = self.context['request'].user
+
+        if user.is_anonymous:
+            return False
+
+        return bool(obj.favorite_recipe.filter(user=user))
+
 
 class RecipeSubscriberSerializer(RecipesSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class RecipeFavoriteSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = UserFavorite
+        fields = ('user', 'recipe')
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UserFavorite.objects.all(),
+                fields=('user', 'recipe')
+            )
+        ]

@@ -119,6 +119,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'authors.paginators.CustomAuthorPagination',
     'PAGE_SIZE': 10
 }
@@ -136,24 +139,3 @@ DJOSER = {
     'LOGIN_FIELD': 'email'
 }
 
-# LOGGING = {
-#     'version': 1,
-#     'handlers': {
-#         'db': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler'
-#         }
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'handlers': ['db'],
-#             'level': 'DEBUG',
-#             'propagate': True
-#         },
-#         'django.server': {
-#             'handlers': ['db'],
-#             'level': 'DEBUG',
-#             'propagate': True
-#         }
-#     }
-# }
