@@ -45,3 +45,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(recipe)
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+    @action(["post"], detail=True)
+    def shopping_cart(self, request, *args, **kwargs) -> Response:
+        recipe = self.get_object()
+        favorite_serializer = RecipeFavoriteSerializer(
+            data={'user': request.user.id, 'recipe': recipe.id}, context={'request': request}
+        )
+        favorite_serializer.is_valid(raise_exception=True)
+        favorite_serializer.save()
+
+        serializer = self.get_serializer(recipe)
+
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)

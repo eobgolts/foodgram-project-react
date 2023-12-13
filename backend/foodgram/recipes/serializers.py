@@ -5,11 +5,10 @@ from rest_framework.validators import (
     UniqueTogetherValidator
 )
 
-from authors.models import UserFavorite
 from authors.serializers import CustomUserSerializer
 from ingredients.models import IngredientValue, Ingredient
 from ingredients.serializers import IngredientValueSerializer
-from recipes.models import RecipeIngredient, Recipe, TagRecipe
+from recipes.models import RecipeIngredient, Recipe, TagRecipe, UserFavorite
 from recipes.models import Tag
 
 User = get_user_model()
