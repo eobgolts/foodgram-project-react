@@ -34,55 +34,27 @@ class RecipesSerializer(serializers.ModelSerializer):
     cooking_time = serializers.IntegerField(min_value=1)
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags', 'is_favorited')
+        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags', 'is_favorited', 'is_in_shopping_cart')
 
     def create(self, validated_data):
-        ingredients_data = self.initial_data.pop('ingredients')
-        tags = self.initial_data.pop('tags')
-
         validated_data.pop('ingredients')
+        instance = Recipe.objects.create(**validated_data)
 
-        recipe = Recipe.objects.create(**validated_data)
-        self.write_tag_to_recipes(recipe, tags)
-        for ingredient_value in ingredients_data:
-            ingredient = get_object_or_404(Ingredient, id=ingredient_value['id'])
-            ingredient_value_obj, status = IngredientValue.objects.get_or_create(
-                name=ingredient.name,
-                amount=ingredient_value['amount'],
-                measurement_unit=ingredient.measurement_unit
-            )
-            recipe_ingridient = RecipeIngredient.object.filter(recipe=recipe)
-            if recipe_ingridient:
-                recipe_ingridient.delete()
-            RecipeIngredient.objects.create(
-                recipe=recipe, ingredient=ingredient_value_obj
-            )
+        self.write_tag_to_recipes(instance, self.initial_data.pop('tags'))
+        self.write_ingredients_to_recipes(instance, self.initial_data.pop('ingredients'))
 
-        return recipe
+        return instance
 
-    def update(self, validated_data):
-        ingredients_data = self.initial_data.pop('ingredients')
-        tags = self.initial_data.pop('tags')
-
+    def update(self, instance, validated_data):
         validated_data.pop('ingredients')
+        self.write_tag_to_recipes(instance, self.initial_data.pop('tags'))
+        self.write_ingredients_to_recipes(instance, self.initial_data.pop('ingredients'))
 
-        recipe = Recipe.objects.create(**validated_data)
-        self.write_tag_to_recipes(recipe, tags)
-        for ingredient_value in ingredients_data:
-            ingredient = get_object_or_404(Ingredient, id=ingredient_value['id'])
-            ingredient_value_obj, status = IngredientValue.objects.get_or_create(
-                name=ingredient.name,
-                amount=ingredient_value['amount'],
-                measurement_unit=ingredient.measurement_unit
-            )
-            RecipeIngredient.objects.create(
-                recipe=recipe, ingredient=ingredient_value_obj
-            )
-
-        return recipe
+        return super().update(instance, validated_data)
 
     def write_tag_to_recipes(self, recipe: Recipe, tags: list[int]) -> None:
         for tag in tags:
@@ -95,6 +67,21 @@ class RecipesSerializer(serializers.ModelSerializer):
                 recipe=recipe
             )
 
+    def write_ingredients_to_recipes(self, recipe: Recipe, ingredients_data: list[dict]):
+        for ingredient_value in ingredients_data:
+            ingredient = get_object_or_404(Ingredient, id=ingredient_value['id'])
+            ingredient_value_obj, status = IngredientValue.objects.get_or_create(
+                name=ingredient.name,
+                amount=ingredient_value['amount'],
+                measurement_unit=ingredient.measurement_unit
+            )
+            recipe_ingredient = RecipeIngredient.objects.filter(recipe=recipe)
+            if recipe_ingredient:
+                recipe_ingredient.delete()
+            RecipeIngredient.objects.create(
+                recipe=recipe, ingredient=ingredient_value_obj
+            )
+
     def get_is_favorited(self, obj) -> bool:
         user = self.context['request'].user
 
@@ -102,6 +89,14 @@ class RecipesSerializer(serializers.ModelSerializer):
             return False
 
         return bool(obj.favorite_recipe.filter(user=user))
+
+    def get_is_in_shopping_cart(self, obj) -> bool:
+        user = self.context['request'].user
+
+        if user.is_anonymous:
+            return False
+
+        return bool(obj.in_user_cart.filter(user=user))
 
 
 class RecipeSubscriberSerializer(RecipesSerializer):

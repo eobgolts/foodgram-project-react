@@ -4,11 +4,12 @@ from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.response import Response
-from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
-from authors.models import AuthorSubscriber
-from recipes.serializers import RecipeSubscriberSerializer
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from authors.permissions import AuthorOnly
+from authors.models import AuthorSubscriber
+from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
+from recipes.serializers import RecipeSubscriberSerializer
 
 User = get_user_model()
 
@@ -23,6 +24,12 @@ class CustomUserViewset(UserViewSet):
             return RecipeSubscriberSerializer
 
         return super().get_serializer_class()
+
+    def get_permissions(self):
+        if self.action == "me":
+            self.permission_classes = (AuthorOnly, )
+
+        return super().get_permissions()
 
     @action(["post", "delete"], detail=True)
     def subscribe(self, request, *args, **kwargs) -> Response:

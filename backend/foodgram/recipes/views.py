@@ -1,20 +1,21 @@
 from rest_framework import status
 from rest_framework import (
-    viewsets,
-    permissions,
+    viewsets
 )
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
-from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, ShoppingCartSerializer
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import MethodNotAllowed
+
+from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, \
+    ShoppingCartSerializer
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     model = Tag
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (permissions.AllowAny,)
     pagination_class = None
 
 
@@ -23,6 +24,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipesSerializer
 
     def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+        )
+
+    def perform_update(self, serializer):
+        if self.request.method == 'PUT':
+            raise MethodNotAllowed(self.request.method)
+
         serializer.save(
             author=self.request.user,
         )

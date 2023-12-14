@@ -14,11 +14,6 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientValueSerializer(IngredientSerializer):
-    # name = serializers.SlugRelatedField(default=Ingredient.objects.all(),
-    #                                     slug_field='name',
-    #                                     read_only=True)
-    # measurement_unit = serializers.SlugRelatedField
-
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')
         read_only_fields = ('name', 'measurement_unit')

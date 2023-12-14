@@ -17,6 +17,4 @@ class Ingredient(models.Model):
 
 
 class IngredientValue(Ingredient):
-    # name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    # measurement_unit = models.ForeignKey(IngredientMeasurementUnit, on_delete=models.CASCADE)
     amount = models.IntegerField()

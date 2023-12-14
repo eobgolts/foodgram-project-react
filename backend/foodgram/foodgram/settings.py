@@ -120,7 +120,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_PAGINATION_CLASS': 'authors.paginators.CustomAuthorPagination',
     'PAGE_SIZE': 10
@@ -128,7 +128,7 @@ REST_FRAMEWORK = {
 DJOSER = {
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
-        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'user': ['rest_framework.permissions.AllowAny'],
     },
     'SERIALIZERS': {
         'user': 'authors.serializers.CustomUserSerializer',
