@@ -5,9 +5,9 @@ from rest_framework import (
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from recipes.models import Tag, Recipe
-from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer
+from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
+from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, ShoppingCartSerializer
+from rest_framework.exceptions import ValidationError
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -28,34 +28,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     def get_serializer_class(self):
-        if self.action == 'favorite':
+        if self.action in ['favorite', 'shopping_cart']:
             return RecipeSubscriberSerializer
 
         return super().get_serializer_class()
 
-    @action(["post"], detail=True)
+    @action(["post", "delete"], detail=True)
     def favorite(self, request, *args, **kwargs) -> Response:
-        recipe = self.get_object()
-        favorite_serializer = RecipeFavoriteSerializer(
-            data={'user': request.user.id, 'recipe': recipe.id}, context={'request': request}
-        )
-        favorite_serializer.is_valid(raise_exception=True)
-        favorite_serializer.save()
+        return self.work_with_favorite_or_cart(request, RecipeFavoriteSerializer, UserFavorite)
 
-        serializer = self.get_serializer(recipe)
-
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-
-    @action(["post"], detail=True)
+    @action(["post", "delete"], detail=True)
     def shopping_cart(self, request, *args, **kwargs) -> Response:
+        return self.work_with_favorite_or_cart(request, ShoppingCartSerializer, ShoppingCart)
+
+    def work_with_favorite_or_cart(self, request, serializer, model) -> Response:
         recipe = self.get_object()
-        favorite_serializer = RecipeFavoriteSerializer(
+
+        if request.method == "DELETE":
+            try:
+                instance = model.objects.get(user=request.user.id, recipe=recipe)
+                self.perform_destroy(instance)
+            except Exception as exc:
+                raise ValidationError(exc)
+            else:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+        write_serializer = serializer(
             data={'user': request.user.id, 'recipe': recipe.id}, context={'request': request}
         )
-        favorite_serializer.is_valid(raise_exception=True)
-        favorite_serializer.save()
-
+        write_serializer.is_valid(raise_exception=True)
+        write_serializer.save()
         serializer = self.get_serializer(recipe)
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)

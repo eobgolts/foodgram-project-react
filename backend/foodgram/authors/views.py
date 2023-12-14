@@ -5,9 +5,10 @@ from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
 from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
+from authors.models import AuthorSubscriber
 from recipes.serializers import RecipeSubscriberSerializer
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -23,9 +24,19 @@ class CustomUserViewset(UserViewSet):
 
         return super().get_serializer_class()
 
-    @action(["post"], detail=True)
+    @action(["post", "delete"], detail=True)
     def subscribe(self, request, *args, **kwargs) -> Response:
         author = self.get_object()
+
+        if request.method == "DELETE":
+            try:
+                instance = AuthorSubscriber.objects.get(subscriber=request.user.id, subscribed=author)
+                self.perform_destroy(instance)
+            except Exception as exc:
+                raise ValidationError(exc)
+            else:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
         subscribe_serializer = SubscriberSerializer(
             data={'subscriber': request.user.id, 'subscribed': author.id}, context={'request': request}
         )
