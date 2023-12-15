@@ -1,3 +1,5 @@
+import platform
+import tempfile
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+TMP_PATH = Path('/tmp' if platform.system() == 'Darwin' else tempfile.gettempdir()).resolve()
 ROOT_URLCONF = 'foodgram.urls'
 
 TEMPLATES = [
@@ -108,7 +111,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static_files/'
+STATIC_ROOT = BASE_DIR / 'static_files'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/var/www/foodgram/media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

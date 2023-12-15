@@ -1,17 +1,20 @@
-import csv
+from pathlib import Path
 
+from django.conf import settings
 from rest_framework import status
 from rest_framework import (
     viewsets
 )
 from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
-from rest_framework.exceptions import MethodNotAllowed
+
 from authors.permissions import AuthorOnly
+from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
 from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, \
     ShoppingCartSerializer
+from recipes.utils import make_file_ready
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -45,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_permissions(self):
-        if self.action == "shopping_cart":
+        if self.action == "download_shopping_cart":
             self.permission_classes = (AuthorOnly, )
 
         return super().get_permissions()
@@ -53,20 +56,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(["get"], detail=False)
     def download_shopping_cart(self, request, *args, **kwargs) -> Response:
         user = self.request.user
-        cart = ShoppingCart.objects.filter(user=user)
-        fieldnames = ['recept', 'ingredient', 'ingredient_unit', 'ingredient_value']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        carts = ShoppingCart.objects.filter(user=user).select_related('recipe')
+        filename = f'{user}_recipes.csv'
+        recipes_file_path = Path(settings.TMP_PATH / filename)
+        make_file_ready(carts, recipes_file_path)
 
-        writer.writeheader()
-
-        response = Response(
-            content_type="text/csv",
-            headers={"Content-Disposition": f'attachment; filename="{user}_recipes.csv"'},
-        )
-
+        with open(recipes_file_path, 'r', encoding='UTF-8') as f:
+            response = Response(
+                content_type="text/csv",
+                headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+                data=f.read()
+            )
 
         return response
-
 
     @action(["post", "delete"], detail=True)
     def favorite(self, request, *args, **kwargs) -> Response:

@@ -6,8 +6,9 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from authors.permissions import AuthorOnly
+
 from authors.models import AuthorSubscriber
+from authors.permissions import AuthorOnly, AuthOnly
 from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
 from recipes.serializers import RecipeSubscriberSerializer
 
@@ -28,6 +29,9 @@ class CustomUserViewset(UserViewSet):
     def get_permissions(self):
         if self.action == "me":
             self.permission_classes = (AuthorOnly, )
+
+        if self.action == 'subscribe':
+            self.permission_classes = (AuthOnly, )
 
         return super().get_permissions()
 
