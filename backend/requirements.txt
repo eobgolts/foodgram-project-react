@@ -2,3 +2,4 @@ Django
 djangorestframework
 djoser
 Pillow
+django-filter

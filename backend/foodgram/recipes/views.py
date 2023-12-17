@@ -9,7 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.filters import RecipeFilter
 from authors.permissions import AuthorOnly
 from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
 from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, \
@@ -27,6 +28,9 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipesSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = RecipeFilter
+    filterset_fields = ('author', 'tags')
 
     def perform_create(self, serializer):
         serializer.save(
@@ -97,3 +101,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             raise ValidationError(exc)
         else:
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        print(self.re)
