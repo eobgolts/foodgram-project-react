@@ -1,21 +1,17 @@
 from django_filters import rest_framework as filters
-from recipes.models import Recipe
+from recipes.models import Recipe, ShoppingCart
 
 
 class RecipeFilter(filters.FilterSet):
-    #tags = filters.(field_name='recipe_tag__tag', lookup_expr='contains')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    is_in_shopping_cart = filters.BooleanFilter(method='check_cart')
+
+    def check_cart(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(in_user_cart__user=self.request.user)
+
+        return queryset
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags')
-
-    def my_custom(self, qs, name, value):
-        print(qs)
-        print(name)
-        if value:
-            print('Helllooowefwefwefwe')
-            print(value)
-            print(qs)
-
-            return qs.filter(recipe_tag__tag__slug=value)
-        return qs
+        fields = ['author', 'tags', 'is_in_shopping_cart']

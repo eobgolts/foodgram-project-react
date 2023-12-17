@@ -29,8 +29,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipesSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_class = RecipeFilter
-    filterset_fields = ('author', 'tags')
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(
@@ -101,6 +100,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
             raise ValidationError(exc)
         else:
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-    def get_queryset(self):
-        print(self.re)

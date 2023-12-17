@@ -29,6 +29,9 @@ class Recipe(models.Model):
                                          through='RecipeIngredient')
     cooking_time = models.PositiveIntegerField(verbose_name='Cook time')
 
+    class Meta:
+        ordering = ('-id',)
+
     def __str__(self):
         return self.name
 
