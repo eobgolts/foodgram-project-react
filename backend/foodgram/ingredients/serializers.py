@@ -14,6 +14,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientValueSerializer(IngredientSerializer):
+    amount = serializers.IntegerField(min_value=1)
+
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')
         read_only_fields = ('name', 'measurement_unit')
