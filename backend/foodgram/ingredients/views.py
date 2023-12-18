@@ -14,7 +14,7 @@ class IngredientSearch(filters.SearchFilter):
 
 class IngridientViewSet(viewsets.ReadOnlyModelViewSet):
     model = Ingredient
-    queryset = Ingredient.objects.all()
+    queryset = Ingredient.objects.select_related('measurement_unit')
     serializer_class = IngredientSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (IngredientSearch,)

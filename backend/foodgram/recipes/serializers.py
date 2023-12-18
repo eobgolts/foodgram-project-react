@@ -73,7 +73,6 @@ class RecipesSerializer(serializers.ModelSerializer):
         tag_recipe: QuerySet[TagRecipe] = TagRecipe.objects.filter(recipe=recipe)
         if tag_recipe:
            tag_recipe.delete()
-        print(tags_to_write)
         TagRecipe.objects.bulk_create([TagRecipe(
             tag=tag_obj,
             recipe=recipe

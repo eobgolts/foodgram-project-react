@@ -49,7 +49,7 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(IngredientValue, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Recipe {self.recipe} with ingedient {self.ingredient}'
+        return f'Recipe {self.recipe} with ingredient {self.ingredient}'
 
 
 class UserFavorite(models.Model):

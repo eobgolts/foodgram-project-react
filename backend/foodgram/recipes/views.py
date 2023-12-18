@@ -30,7 +30,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.prefetch_related('tags', 'ingredients').select_related('author')
     serializer_class = RecipesSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
