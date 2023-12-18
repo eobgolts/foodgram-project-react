@@ -16,6 +16,7 @@ from recipes.models import Tag, Recipe, ShoppingCart, UserFavorite
 from recipes.serializers import TagSerializer, RecipesSerializer, RecipeSubscriberSerializer, RecipeFavoriteSerializer, \
     ShoppingCartSerializer
 from recipes.utils import make_file_ready
+from rest_framework.exceptions import PermissionDenied
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -37,8 +38,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     def perform_update(self, serializer):
+        obj = self.get_object()
         if self.request.method == 'PUT':
             raise MethodNotAllowed(self.request.method)
+        if self.request.user != obj.author:
+            raise PermissionDenied
 
         serializer.save(
             author=self.request.user,
@@ -51,7 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_permissions(self):
-        if self.action == "download_shopping_cart":
+        if self.action == 'download_shopping_cart':
             self.permission_classes = (AuthorOnly, )
 
         return super().get_permissions()

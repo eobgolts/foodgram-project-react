@@ -17,4 +17,4 @@ class Ingredient(models.Model):
 
 
 class IngredientValue(Ingredient):
-    amount = models.IntegerField()
+    amount = models.PositiveIntegerField()
