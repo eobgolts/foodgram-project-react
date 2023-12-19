@@ -1,1 +1,1 @@
-# praktikum_new_diplom
+# Доменное имя: eobgolts-foodgram.ddns.net
