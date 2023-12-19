@@ -25,7 +25,8 @@ def calc_recipes_dict(carts: QuerySet) -> dict:
             else:
                 recipes_dict[ingredient.name] = {
                     'name': ingredient.name,
-                    'measurement_unit': ingredient.measurement_unit.measurement_unit,
+                    'measurement_unit':
+                        ingredient.measurement_unit.measurement_unit,
                     'amount': ingredient.amount
                 }
 

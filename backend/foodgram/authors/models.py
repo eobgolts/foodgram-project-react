@@ -5,8 +5,10 @@ User = get_user_model()
 
 
 class AuthorSubscriber(models.Model):
-    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
-    subscribed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name='follower')
+    subscribed = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name='following')
 
     class Meta:
         ordering = 'subscriber',

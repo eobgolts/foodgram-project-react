@@ -9,9 +9,18 @@ from rest_framework.validators import (
 )
 
 from authors.serializers import CustomUserSerializer
-from ingredients.models import IngredientValue, Ingredient
+from ingredients.models import (
+    IngredientValue,
+    Ingredient
+)
 from ingredients.serializers import IngredientValueSerializer
-from recipes.models import RecipeIngredient, Recipe, TagRecipe, UserFavorite, ShoppingCart
+from recipes.models import (
+    RecipeIngredient,
+    Recipe,
+    TagRecipe,
+    UserFavorite,
+    ShoppingCart
+)
 from recipes.models import Tag
 
 User = get_user_model()
@@ -51,7 +60,9 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'author', 'image', 'text', 'cooking_time', 'ingredients', 'tags', 'is_favorited', 'is_in_shopping_cart')
+        fields = ('id', 'name', 'author', 'image',
+                  'text', 'cooking_time', 'ingredients',
+                  'tags', 'is_favorited', 'is_in_shopping_cart')
 
     def create(self, validated_data):
 
@@ -72,66 +83,96 @@ class RecipesSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
-    def write_tag_to_recipes(self, recipe: Recipe, tags_to_write: list[Tag]) -> None:
-        tag_recipe: QuerySet[TagRecipe] = TagRecipe.objects.filter(recipe=recipe)
+    def write_tag_to_recipes(self, recipe: Recipe,
+                             tags_to_write: list[Tag]) -> None:
+        tag_recipe: QuerySet[TagRecipe] = TagRecipe.objects.filter(
+            recipe=recipe
+        )
         if tag_recipe:
-           tag_recipe.delete()
+            tag_recipe.delete()
         TagRecipe.objects.bulk_create([TagRecipe(
             tag=tag_obj,
             recipe=recipe
         ) for tag_obj in tags_to_write])
 
-    def write_ingredients_to_recipes(self, recipe: Recipe, ingredients_to_write: list[IngredientValue]):
-        recipe_ingredient: QuerySet[RecipeIngredient] = RecipeIngredient.objects.filter(recipe=recipe)
+    def write_ingredients_to_recipes(
+            self, recipe: Recipe,
+            ingredients_to_write: list[IngredientValue]
+    ):
+        recipe_ingredient: QuerySet[RecipeIngredient] = \
+            RecipeIngredient.objects.filter(recipe=recipe)
         if recipe_ingredient:
             recipe_ingredient.delete()
 
         RecipeIngredient.objects.bulk_create(
-            [
-            RecipeIngredient(recipe=recipe, ingredient=ingredient_obj)
-                for ingredient_obj in ingredients_to_write
-            ]
+            [RecipeIngredient(recipe=recipe,
+                              ingredient=ingredient_obj)
+                for ingredient_obj in ingredients_to_write]
         )
 
-    def validate_ingredients_tags(self) -> tuple[list[Tag], list[IngredientValue]]:
+    def validate_ingredients_tags(self) -> tuple[
+        list[Tag],
+        list[IngredientValue]
+    ]:
 
         def validate_tags(tags_list: list[int]) -> list[Tag]:
             validated_tags: list[Tag] = []
 
             if not tags_list:
-                raise serializers.ValidationError('Список тегов не может быть пустым')
+                raise serializers.ValidationError(
+                    'Список тегов не может быть пустым'
+                )
             if len(set(tags_list)) < len(tags_list):
-                raise serializers.ValidationError('Список тегов содержит дублирующие значения')
+                raise serializers.ValidationError(
+                    'Список тегов содержит дублирующие значения'
+                )
             for tag in tags_list:
                 try:
                     tag_obj: Tag = Tag.objects.get(id=tag)
                 except ObjectDoesNotExist:
-                    raise serializers.ValidationError(f'Tag {tag} не существует')
+                    raise serializers.ValidationError(
+                        f'Tag {tag} не существует'
+                    )
                 validated_tags.append(tag_obj)
 
             return validated_tags
 
-        def validate_ingredients(ingredient_list: list[dict]) -> list[IngredientValue]:
-            validated_ingredients: list[IngredientValue] = []
-
+        def validate_ingredients(ingredient_list: list[dict]) -> list[
+            IngredientValue
+        ]:
+            validated_ingredients: list[
+                IngredientValue
+            ] = []
             if not ingredient_list:
-                raise serializers.ValidationError('Список ингредиентов не может быть пустым')
+                raise serializers.ValidationError(
+                    'Список ингредиентов не может быть пустым'
+                )
 
-            if len(set([d['id'] for d in ingredient_list])) < len(ingredient_list):
-                raise serializers.ValidationError('Список ингредиентов содержит дублирующие значения')
+            if len(
+                    set([d['id'] for d in ingredient_list])
+            ) < len(ingredient_list):
+                raise serializers.ValidationError(
+                    'Список ингредиентов содержит дублирующие значения'
+                )
 
             for ingredient_value in ingredient_list:
                 serializer = IngredientValueSerializer(data=ingredient_value)
                 serializer.is_valid(raise_exception=True)
                 try:
-                    ingredient: Ingredient = Ingredient.objects.get(id=ingredient_value['id'])
+                    ingredient: Ingredient = Ingredient.objects.get(
+                        id=ingredient_value['id']
+                    )
                 except ObjectDoesNotExist:
-                    raise serializers.ValidationError(f'Ингредиент с id {ingredient_value["id"]} не существует')
+                    raise serializers.ValidationError(
+                        f'Ингредиент с id {ingredient_value["id"]} '
+                        f'не существует'
+                    )
                 else:
-                    ingredient_value_obj, status = IngredientValue.objects.get_or_create(
-                        name=ingredient.name,
-                        amount=ingredient_value['amount'],
-                        measurement_unit=ingredient.measurement_unit
+                    ingredient_value_obj, status = (
+                        IngredientValue.objects.get_or_create(
+                            name=ingredient.name,
+                            amount=ingredient_value['amount'],
+                            measurement_unit=ingredient.measurement_unit)
                     )
                     validated_ingredients.append(ingredient_value_obj)
 
@@ -141,7 +182,9 @@ class RecipesSerializer(serializers.ModelSerializer):
         tags_to_write: list[Tag] = validate_tags(tags)
 
         ingredients_data = self.initial_data.get('ingredients')
-        ingredients_to_write: list[IngredientValue] = validate_ingredients(ingredients_data)
+        ingredients_to_write: list[IngredientValue] = validate_ingredients(
+            ingredients_data
+        )
 
         return tags_to_write, ingredients_to_write
 
@@ -169,8 +212,12 @@ class RecipeSubscriberSerializer(RecipesSerializer):
 
 
 class RecipeFavoriteSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all()
+    )
 
     class Meta:
         model = UserFavorite

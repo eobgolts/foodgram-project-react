@@ -2,7 +2,9 @@ from django.db import models
 
 
 class IngredientMeasurementUnit(models.Model):
-    measurement_unit = models.CharField(max_length=16, verbose_name='Единица измерения')
+    measurement_unit = models.CharField(
+        max_length=16, verbose_name='Единица измерения'
+    )
 
     class Meta:
         verbose_name = 'Единица измерения'
@@ -13,8 +15,12 @@ class IngredientMeasurementUnit(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=16, verbose_name='Имя ингредиента')
-    measurement_unit = models.ForeignKey(IngredientMeasurementUnit, on_delete=models.CASCADE)
+    name = models.CharField(
+        max_length=16, verbose_name='Имя ингредиента'
+    )
+    measurement_unit = models.ForeignKey(
+        IngredientMeasurementUnit, on_delete=models.CASCADE
+    )
 
     class Meta:
         verbose_name = 'Тип ингредиента'
@@ -25,7 +31,9 @@ class Ingredient(models.Model):
 
 
 class IngredientValue(Ingredient):
-    amount = models.PositiveIntegerField(verbose_name='Количество')
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество'
+    )
 
     class Meta:
         verbose_name = 'Ингредиент'

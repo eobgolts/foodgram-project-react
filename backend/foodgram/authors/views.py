@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -9,7 +7,10 @@ from rest_framework.response import Response
 
 from authors.models import AuthorSubscriber
 from authors.permissions import AuthorOnly, AuthOnly
-from authors.subscribe_serializers import SubscriberSerializer, CustomUserSubscriberSerializer
+from authors.subscribe_serializers import (
+    SubscriberSerializer,
+    CustomUserSubscriberSerializer
+)
 from recipes.serializers import RecipeSubscriberSerializer
 
 User = get_user_model()
@@ -41,7 +42,9 @@ class CustomUserViewset(UserViewSet):
 
         if request.method == "DELETE":
             try:
-                instance = AuthorSubscriber.objects.get(subscriber=request.user.id, subscribed=author)
+                instance = AuthorSubscriber.objects.get(
+                    subscriber=request.user.id, subscribed=author
+                )
                 self.perform_destroy(instance)
             except Exception as exc:
                 raise ValidationError(exc)
@@ -49,7 +52,8 @@ class CustomUserViewset(UserViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
         subscribe_serializer = SubscriberSerializer(
-            data={'subscriber': request.user.id, 'subscribed': author.id}, context={'request': request}
+            data={'subscriber': request.user.id, 'subscribed': author.id},
+            context={'request': request}
         )
         subscribe_serializer.is_valid(raise_exception=True)
         subscribe_serializer.save()

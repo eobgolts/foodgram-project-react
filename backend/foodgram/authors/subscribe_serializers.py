@@ -19,7 +19,10 @@ class CustomUserSubscriberSerializer(CustomUserSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        fields = ('email', 'id',
+                  'username', 'first_name',
+                  'last_name', 'is_subscribed',
+                  'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj) -> int:
         return obj.recipes.count()
@@ -30,12 +33,18 @@ class CustomUserSubscriberSerializer(CustomUserSerializer):
         if limit:
             recipes = recipes[:int(limit)]
 
-        return RecipeSubscriberSerializer(recipes, many=True, read_only=True).data
+        return RecipeSubscriberSerializer(recipes,
+                                          many=True,
+                                          read_only=True).data
 
 
 class SubscriberSerializer(serializers.ModelSerializer):
-    subscriber = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    subscribed = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    subscriber = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    subscribed = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
 
     class Meta:
         model = AuthorSubscriber
@@ -52,8 +61,10 @@ class SubscriberSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         if user == data['subscribed']:
-            raise serializers.ValidationError('Невозможно выполнить '
-                                              'подписку пользователя, '
-                                              f'{user} на себя самого')
+            raise serializers.ValidationError(
+                'Невозможно выполнить '
+                'подписку пользователя, '
+                f'{user} на себя самого'
+            )
 
         return data

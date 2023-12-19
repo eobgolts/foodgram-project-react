@@ -28,12 +28,14 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='recipes/images/',
-        )
+    )
     tags = models.ManyToManyField(Tag,
                                   through='TagRecipe')
     ingredients = models.ManyToManyField(IngredientValue,
                                          through='RecipeIngredient')
-    cooking_time = models.PositiveIntegerField(verbose_name='Время приготовления')
+    cooking_time = models.PositiveIntegerField(
+        verbose_name='Время приготовления'
+    )
 
     class Meta:
         ordering = ('-id',)
@@ -45,32 +47,50 @@ class Recipe(models.Model):
 
 
 class TagRecipe(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_tag', verbose_name='Рецепт')
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tag_recipe', verbose_name='Тэг')
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE,
+                               related_name='recipe_tag',
+                               verbose_name='Рецепт')
+    tag = models.ForeignKey(Tag,
+                            on_delete=models.CASCADE,
+                            related_name='tag_recipe',
+                            verbose_name='Тэг')
 
     def __str__(self):
         return f'Рецепт "{self.recipe}" с тегом "{self.tag}"'
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
-    ingredient = models.ForeignKey(IngredientValue, on_delete=models.CASCADE, verbose_name='Ингредиент')
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE,
+                               verbose_name='Рецепт')
+    ingredient = models.ForeignKey(IngredientValue,
+                                   on_delete=models.CASCADE,
+                                   verbose_name='Ингредиент')
 
     def __str__(self):
         return f'Ингридиент "{self.ingredient}" для рецепта "{self.recipe}"'
 
 
 class UserFavorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_user')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='favorite_recipe')
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='favorite_user')
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE,
+                               related_name='favorite_recipe')
 
     def __str__(self):
         return f'User {self.user} favorite {self.recipe}'
 
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='in_cart')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_user_cart')
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='in_cart')
+    recipe = models.ForeignKey(Recipe,
+                               on_delete=models.CASCADE,
+                               related_name='in_user_cart')
 
     def __str__(self):
         return f'User {self.user} shopping cart'
