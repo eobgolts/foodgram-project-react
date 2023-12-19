@@ -43,11 +43,11 @@ class Recipe(models.Model):
 
 
 class TagRecipe(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_tag')
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tag_recipe')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_tag', verbose_name='Рецепт')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tag_recipe', verbose_name='Тэг')
 
     def __str__(self):
-        return f'Recipe {self.recipe} with Tag {self.tag}'
+        return f'Рецепт "{self.recipe}" с тегом "{self.tag}"'
 
 
 class RecipeIngredient(models.Model):
