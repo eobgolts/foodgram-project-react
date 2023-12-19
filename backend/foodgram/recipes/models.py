@@ -26,7 +26,9 @@ class Recipe(models.Model):
         User, related_name='recipes',
         on_delete=models.CASCADE
     )
-    image = models.TextField()
+    image = models.ImageField(
+        upload_to='recipes/images/',
+        )
     tags = models.ManyToManyField(Tag,
                                   through='TagRecipe')
     ingredients = models.ManyToManyField(IngredientValue,
