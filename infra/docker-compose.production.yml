@@ -20,7 +20,7 @@ services:
     env_file: ../.env
     volumes:
      - media:/foodgram_media
-     - ../data:/app/data
+     - ../data:/data
   frontend:
     container_name: foodgram_frontend
     image: eobgolts/foodgram_frontend
