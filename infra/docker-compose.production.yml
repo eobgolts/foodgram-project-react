@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3'
 
 volumes:
   pg_data:
@@ -9,7 +9,7 @@ services:
   foodgram_db:
     container_name: foodgram_db
     image: postgres:13
-    env_file: ../.env
+    env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
   foodgram_backend:
@@ -17,7 +17,7 @@ services:
     depends_on:
       - foodgram_db
     image: eobgolts/foodgram_backend
-    env_file: ../.env
+    env_file: .env
     volumes:
      - media:/foodgram_media
      - ../data:/data

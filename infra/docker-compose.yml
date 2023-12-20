@@ -1,6 +1,16 @@
-version: '3.3'
-services:
+version: '3'
+volumes:
+  pg_data:
 
+services:
+  foodgram_db:
+    container_name: foodgram_db
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   frontend:
     build:
       context: ../frontend
