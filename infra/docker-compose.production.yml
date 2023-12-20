@@ -16,12 +16,12 @@ services:
     container_name: foodgram_backend
     depends_on:
       - foodgram_db
-    image: eobgolts/foodram_backend
+    image: eobgolts/foodgram_backend
     env_file: ../.env
     volumes:
      - media:/foodgram_media
   frontend:
-    image: eobgolts/foodram_frontend
+    image: eobgolts/foodgram_frontend
     volumes:
       - static:/app/result_build/
   nginx:
