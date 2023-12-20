@@ -6,4 +6,4 @@ python manage.py load_ingredients
 python manage.py load_tags
 
 
-gunicorn --bind 0.0.0.0:8080 foodgram.wsgi
+gunicorn --bind 0.0.0.0:8080 foodgram.foodgram.wsgi
