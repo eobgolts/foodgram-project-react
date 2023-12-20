@@ -6,3 +6,4 @@ django-filter
 gunicorn
 psycopg2-binary
 flake8
+python-dotenv

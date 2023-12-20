@@ -17,7 +17,7 @@ class Command(BaseCommand):
             help="Filepath to datafile",
             required=False,
             default=(
-                settings.BASE_DIR.parent.parent / 'data' / 'ingredients.json'
+                settings.BASE_DIR.parent / 'data' / 'ingredients.json'
             )
         )
 
