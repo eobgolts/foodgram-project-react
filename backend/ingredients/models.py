@@ -3,7 +3,7 @@ from django.db import models
 
 class IngredientMeasurementUnit(models.Model):
     measurement_unit = models.CharField(
-        max_length=16, verbose_name='Единица измерения'
+        max_length=200, verbose_name='Единица измерения'
     )
 
     class Meta:
@@ -16,7 +16,7 @@ class IngredientMeasurementUnit(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=16, verbose_name='Имя ингредиента'
+        max_length=200, verbose_name='Имя ингредиента'
     )
     measurement_unit = models.ForeignKey(
         IngredientMeasurementUnit, on_delete=models.CASCADE
