@@ -21,13 +21,15 @@ services:
     volumes:
      - media:/foodgram_media
   frontend:
+    container_name: foodgram_frontend
     image: eobgolts/foodgram_frontend
     volumes:
       - static:/app/result_build/
   nginx:
+    container_name: foodgram_gateway
     image: nginx:1.19.3
     ports:
-      - "80:80"
+      - "8081:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/
