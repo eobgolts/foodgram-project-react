@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.conf import settings
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework import (
@@ -71,19 +72,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     @action(["get"], detail=False)
-    def download_shopping_cart(self, request, *args, **kwargs) -> Response:
+    def download_shopping_cart(self, request, *args, **kwargs) -> HttpResponse:
         user = self.request.user
         carts = ShoppingCart.objects.filter(
             user=user).select_related('recipe')
         filename = f'{user}_recipes.csv'
         recipes_file_path = Path(settings.TMP_PATH / filename)
-        make_file_ready(carts, recipes_file_path)
-
-        response = Response(
-            content_type="text/csv",
-            headers={"Content-Disposition":
-                     f'attachment; filename="{recipes_file_path.resolve()}"'},
-        )
+        response = make_file_ready(carts, recipes_file_path)
 
         return response
 
