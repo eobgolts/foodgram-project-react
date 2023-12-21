@@ -7,8 +7,10 @@ class NonValidatingMultipleChoiceField(MultipleChoiceField):
     def validate(self, value):
         pass
 
+
 class NonValidateChoices(filters.AllValuesMultipleFilter):
     field_class = NonValidatingMultipleChoiceField
+
 
 class RecipeFilter(filters.FilterSet):
     tags = NonValidateChoices(field_name='tags__slug')
