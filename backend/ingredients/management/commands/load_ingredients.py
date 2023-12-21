@@ -34,7 +34,8 @@ class Command(BaseCommand):
                 for ingred in IngredientMeasurementUnit.objects.all()
             }
 
-        Ingredient.objects.bulk_create([Ingredient(
-            name=_['name'],
-            measurement_unit=ingredient_dict[_["measurement_unit"]]
-        ) for _ in file_content])
+        for _ in file_content:
+            Ingredient.objects.get_or_create(
+                name=_['name'],
+                measurement_unit=ingredient_dict[_["measurement_unit"]]
+            )
