@@ -79,13 +79,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes_file_path = Path(settings.TMP_PATH / filename)
         make_file_ready(carts, recipes_file_path)
 
-        with open(recipes_file_path, 'r', encoding='UTF-8') as f:
-            response = Response(
-                content_type="text/csv",
-                headers={"Content-Disposition":
-                         f'attachment; filename="{filename}"'},
-                data=f.read()
-            )
+        response = Response(
+            content_type="text/csv",
+            headers={"Content-Disposition":
+                     f'attachment; filename="{recipes_file_path.resolve()}"'},
+        )
 
         return response
 
