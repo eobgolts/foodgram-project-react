@@ -119,7 +119,9 @@ class RecipesSerializer(serializers.ModelSerializer):
         tags_to_write: list[Tag] = self.validate_tags(tags)
 
         ingredients_data = self.initial_data.get('ingredients')
-        ingredients_to_write: list[IngredientValue] = self.validate_ingredients(
+        ingredients_to_write: list[
+            IngredientValue
+        ] = self.validate_ingredients(
             ingredients_data
         )
 
@@ -146,7 +148,6 @@ class RecipesSerializer(serializers.ModelSerializer):
             validated_tags.append(tag_obj)
 
         return validated_tags
-
 
     def validate_ingredients(self, ingredient_list: list[dict]) -> list[
         IngredientValue
