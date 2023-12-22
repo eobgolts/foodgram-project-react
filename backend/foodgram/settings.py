@@ -6,6 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+if os.getenv('DEBUG'):
+    DEBUG = True
+
+MIN_INTEGER_VALUE = 1
+MAX_INTEGER_VALUE = 32000
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

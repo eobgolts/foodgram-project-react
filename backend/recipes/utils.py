@@ -12,8 +12,8 @@ def make_file_ready(recipes: QuerySet, filepath: Path) -> HttpResponse:
         filepath.unlink()
 
     response = HttpResponse(
-        content_type="text/csv",
-        headers={"Content-Disposition":
+        content_type='text/csv',
+        headers={'Content-Disposition':
                      f'attachment; filename="{filepath.resolve()}"'},
     )
     fieldnames = ['name', 'measurement_unit', 'amount']

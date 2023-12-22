@@ -1,4 +1,9 @@
 from django.db import models
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator
+)
+from django.conf import settings
 
 
 class IngredientMeasurementUnit(models.Model):
@@ -31,8 +36,12 @@ class Ingredient(models.Model):
 
 
 class IngredientValue(Ingredient):
-    amount = models.PositiveIntegerField(
-        verbose_name='Количество'
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Количество',
+        validators=[
+            MaxValueValidator(settings.MAX_INTEGER_VALUE),
+            MinValueValidator(settings.MIN_INTEGER_VALUE)
+        ]
     )
 
     class Meta:

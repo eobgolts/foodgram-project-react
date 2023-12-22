@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.validators import (
     UniqueTogetherValidator
 )
+from django.conf import settings
 
 from authors.serializers import CustomUserSerializer
 from ingredients.models import (
@@ -53,7 +54,10 @@ class RecipesSerializer(serializers.ModelSerializer):
     ingredients = IngredientValueSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField()
-    cooking_time = serializers.IntegerField(min_value=1)
+    cooking_time = serializers.IntegerField(
+        min_value=settings.MIN_INTEGER_VALUE,
+        max_value=settings.MAX_INTEGER_VALUE
+    )
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -85,12 +89,10 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     def write_tag_to_recipes(self, recipe: Recipe,
                              tags_to_write: list[Tag]) -> None:
-        tag_recipe: QuerySet[TagRecipe] = TagRecipe.objects.filter(
-            recipe=recipe
-        )
+        tag_recipe: QuerySet[TagRecipe] = recipe.recipe_tag.all()
         if tag_recipe:
             tag_recipe.delete()
-        TagRecipe.objects.bulk_create([TagRecipe(
+        recipe.recipe_tag.bulk_create([TagRecipe(
             tag=tag_obj,
             recipe=recipe
         ) for tag_obj in tags_to_write])
@@ -99,12 +101,13 @@ class RecipesSerializer(serializers.ModelSerializer):
             self, recipe: Recipe,
             ingredients_to_write: list[IngredientValue]
     ):
-        recipe_ingredient: QuerySet[RecipeIngredient] = \
-            RecipeIngredient.objects.filter(recipe=recipe)
+        recipe_ingredient: QuerySet[RecipeIngredient] = (
+            recipe.recipe_ingredient.all()
+        )
         if recipe_ingredient:
             recipe_ingredient.delete()
 
-        RecipeIngredient.objects.bulk_create(
+        recipe.recipe_ingredient.bulk_create(
             [RecipeIngredient(recipe=recipe,
                               ingredient=ingredient_obj)
                 for ingredient_obj in ingredients_to_write]
@@ -196,7 +199,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
 
-        return bool(obj.favorite_recipe.filter(user=user))
+        return obj.favorite_recipe.filter(user=user).exists()
 
     def get_is_in_shopping_cart(self, obj) -> bool:
         user = self.context['request'].user
@@ -204,7 +207,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
 
-        return bool(obj.in_user_cart.filter(user=user))
+        return obj.in_user_cart.filter(user=user).exists()
 
 
 class RecipeSubscriberSerializer(RecipesSerializer):

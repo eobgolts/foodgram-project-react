@@ -71,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
-    @action(["get"], detail=False)
+    @action(['get'], detail=False)
     def download_shopping_cart(self, request, *args, **kwargs) -> HttpResponse:
         user = self.request.user
         carts = ShoppingCart.objects.filter(
@@ -82,7 +82,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return response
 
-    @action(["post", "delete"], detail=True)
+    @action(['post', 'delete'], detail=True)
     def favorite(self, request, *args, **kwargs) -> Response:
         return self.work_with_favorite_or_cart(
             request,
@@ -90,7 +90,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             UserFavorite
         )
 
-    @action(["post", "delete"], detail=True)
+    @action(['post', 'delete'], detail=True)
     def shopping_cart(self, request, *args, **kwargs) -> Response:
         return self.work_with_favorite_or_cart(
             request,
@@ -102,7 +102,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                    request,
                                    serializer,
                                    model) -> Response:
-        if request.method == "DELETE":
+        if request.method == 'DELETE':
             recipe = self.get_object()
             try:
                 instance = model.objects.get(
@@ -126,6 +126,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(recipe)
         except (ObjectDoesNotExist, Http404) as exc:
             raise ValidationError(exc)
-        else:
-            return Response(data=serializer.data,
-                            status=status.HTTP_201_CREATED)
+
+        return Response(data=serializer.data,
+                        status=status.HTTP_201_CREATED)

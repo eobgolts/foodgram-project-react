@@ -6,7 +6,7 @@ COLOR_HEX_LIST = ['#FF0000', '#0000FF', '#008000', '#FFFF00', '#000000']
 
 
 class Command(BaseCommand):
-    help = "Предзагрузка списка тегов"
+    help = 'Предзагрузка списка тегов'
 
     def handle(self, *args, **options):
         for idx, color in enumerate(COLOR_HEX_LIST):

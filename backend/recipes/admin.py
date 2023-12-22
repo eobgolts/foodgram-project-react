@@ -32,7 +32,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     inlines = [RecipeIngredientInline, TagRecipeInline]
 
-    @admin.display(description="В избранном")
+    @admin.display(description='В избранном')
     def favorite_count(self, obj):
         return obj.favorite_recipe.count()
 

@@ -9,12 +9,12 @@ from ingredients.models import (
 
 
 class Command(BaseCommand):
-    help = "Предзагрузка списка возможных ингридиентов"
+    help = 'Предзагрузка списка возможных ингридиентов'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--file_path",
-            help="Filepath to datafile",
+            '--file_path',
+            help='Filepath to datafile',
             required=False,
             default=(
                 settings.BASE_DIR.parent / 'data' / 'ingredients.json'
@@ -37,5 +37,5 @@ class Command(BaseCommand):
         for _ in file_content:
             Ingredient.objects.get_or_create(
                 name=_['name'],
-                measurement_unit=ingredient_dict[_["measurement_unit"]]
+                measurement_unit=ingredient_dict[_['measurement_unit']]
             )

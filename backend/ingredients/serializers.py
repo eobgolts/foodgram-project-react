@@ -1,9 +1,10 @@
 from rest_framework import serializers
+from django.conf import settings
 
 from ingredients.models import (
     Ingredient,
     IngredientValue,
-    IngredientMeasurementUnit
+    IngredientMeasurementUnit,
 )
 
 
@@ -20,7 +21,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientValueSerializer(IngredientSerializer):
-    amount = serializers.IntegerField(min_value=1)
+    amount = serializers.IntegerField(
+        min_value=settings.MIN_INTEGER_VALUE,
+        max_value=settings.MAX_INTEGER_VALUE
+    )
 
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')

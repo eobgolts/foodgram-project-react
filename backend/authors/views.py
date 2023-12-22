@@ -28,7 +28,7 @@ class CustomUserViewset(UserViewSet):
         return super().get_serializer_class()
 
     def get_permissions(self):
-        if self.action == "me":
+        if self.action == 'me':
             self.permission_classes = (AuthorOnly, )
 
         if self.action == 'subscribe':
@@ -36,11 +36,11 @@ class CustomUserViewset(UserViewSet):
 
         return super().get_permissions()
 
-    @action(["post", "delete"], detail=True)
+    @action(['post', 'delete'], detail=True)
     def subscribe(self, request, *args, **kwargs) -> Response:
         author = self.get_object()
 
-        if request.method == "DELETE":
+        if request.method == 'DELETE':
             try:
                 instance = AuthorSubscriber.objects.get(
                     subscriber=request.user.id, subscribed=author
@@ -62,7 +62,7 @@ class CustomUserViewset(UserViewSet):
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(["get"], detail=False)
+    @action(['get'], detail=False)
     def subscriptions(self, request, *args, **kwargs) -> Response:
         author = request.user
         queryset = User.objects.filter(following__subscriber=author)
